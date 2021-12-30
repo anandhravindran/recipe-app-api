@@ -1,5 +1,7 @@
 import time
 
+from psycopg2 import OperationalError as Psycopg2OpError
+
 from django.db import connections
 from django.db.utils import OperationalError
 from django.core.management.base import BaseCommand
@@ -14,7 +16,7 @@ class Command(BaseCommand):
         while not db_conn:
             try:
                 db_conn = connections['default']
-            except OperationalError:
+            except (OperationalError, Psycopg2OpError):
                 self.stdout.write('Database unavailable, waiting for 1 sec')
                 time.sleep(1)
         self.stdout.write(self.style.SUCCESS('Database available'))
